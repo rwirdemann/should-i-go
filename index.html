@@ -1,40 +1,104 @@
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+	<title>reveal.js</title>
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
+	<link rel="stylesheet" href="dist/reset.css">
+	<link rel="stylesheet" href="dist/reveal.css">
+	<link rel="stylesheet" href="dist/theme/black.css">
+
+	<!-- Theme used for syntax highlighted code -->
+	<link rel="stylesheet" href="plugin/highlight/monokai.css">
+</head>
+
+<body>
+	<div class="reveal">
+		<div class="slides">
+			<section>
+				<h2>Should I stay or should I Go?</h2>
+				<p>Ralf Wirdemann - CodeKeepers GmbH</p>
+			</section>
+			<section>
+				<pre class="stretch">
+					<code data-trim data-noescape>
+						- (RACSignal *)getAllGroupsV2 {
+	
+							RACSignal *signal = [communicator get:@"http://picue.de/groups"];
+							
+							return [RACSignal createSignal:^RACDisposable *(id<RACSubscriber> subscriber) {
+							
+								[signal subscribeNext:^(NSDictionary *data) {
+									NSManagedObjectContext *context =
+										[PQCoreDataManager sharedManager].managedContext;
+									[PQGroup createOrUpdateWithContext:context data:data];
+							
+								} error:^(NSError *error){
+									[subscriber sendError:error];
+							
+								} completed:^{
+									[[PQCoreDataManager sharedManager] saveContext];
+									[subscriber sendCompleted];
+								}];
+								
+								return nil;
+							}];
+						}					
+					</code>
+				</pre>
+			</section>
+			<section>
+				<pre class="stretch">
+					<code class="go" data-trim data-noescape>
+						func getAllGroupsV2() {
+							if resp, err := http.Get("http://picue.de/groups"); err != nil {
+								panic(err)
+							} else {
+								var groups []domain.Group
+								json := resp.Body
+								decoder := json.NewDecoder(json)	
+								decode.Decode(&groups)
+								database.CreateGroups(groups)
+							}
+						}						
+					</code>
+				</pre>
+			</section>
+			<section>
+				<h2>Geschichte</h2>
+				<p class="fragment" style="text-align: left;">2007: Frust Komplextität von Google-Software</p>
+				<ul style="list-style-type: square">
+					<li class="fragment" style="text-align: left;">Komplexe Abhängigkeiten</li>
+					<li class="fragment" style="text-align: left;">Langsame Builds</li>
+					<li class="fragment" style="text-align: left;">Jeder nutzt unterschiedliche
+						Subsets der Sprache</li>
+					<li class="fragment" style="text-align: left;">Mangelnde Lesbarkeit</li>
+					<li class="fragment" style="text-align: left;">Updates sind teuer</li>
+				</ul>
+			</section>
+			<section>Slide 2</section>
 		</div>
+	</div>
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+	<script src="dist/reveal.js"></script>
+	<script src="plugin/notes/notes.js"></script>
+	<script src="plugin/markdown/markdown.js"></script>
+	<script src="plugin/highlight/highlight.js"></script>
+	<script>
+		// More info about initialization & config:
+		// - https://revealjs.com/initialization/
+		// - https://revealjs.com/config/
+		Reveal.initialize({
+			hash: true,
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+			// Learn about plugins: https://revealjs.com/plugins/
+			plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+		});
+	</script>
+</body>
+
 </html>
